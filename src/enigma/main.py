@@ -17,13 +17,13 @@ def run():
     """
     Run the crew.
     """
-    inputs = {
-        'topic': 'AI LLMs',
-        'current_year': str(datetime.now().year)
-    }
+    # inputs = {
+    #     'topic': 'AI LLMs',
+    #     'current_year': str(datetime.now().year)
+    # }
     
     try:
-        Enigma().crew().kickoff(inputs=inputs)
+        Enigma().crew().kickoff()
     except Exception as e:
         raise Exception(f"An error occurred while running the crew: {e}")
 

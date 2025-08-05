@@ -1,17 +1,30 @@
-research_task:
+extract_document_sections_task:
   description: >
-    Conduct a thorough research about {topic}
-    Make sure you find any interesting and relevant information given
-    the current year is {current_year}.
+    Read the scientific document and divide it into logical sections
+    such as Introduction, Methods, Results and Discussion.
   expected_output: >
-    A list with 10 bullet points of the most relevant information about {topic}
-  agent: researcher
+     A structured JSON or list of text segments representing each document section.
+  agent: reader_agent
+  # args:
+  #     file_path: "documents/PlanetaTransparente.pdf"
 
-reporting_task:
+summarize_sections_task:
   description: >
-    Review the context you got and expand each topic into a full section for a report.
-    Make sure the report is detailed and contains any and all relevant information.
+    Generate summaries for each of the extracted sections using the selected LLM,
+    enriched with relevant context through RAG if necessary.
   expected_output: >
-    A fully fledged report with the main topics, each with a full section of information.
-    Formatted as markdown without '```'
-  agent: reporting_analyst
+    A set of concise, well-structured summaries corresponding to each section of the document.
+  agent: summarizer_agent
+  # input_tasks:
+  #   extract_document_sections
+
+compile_final_summary_task:
+  description: >
+    Review and merge all section summaries into one cohesive document-level summary.
+     Ensure clarity, consistency, and logical flow throughout the final output.
+  expected_output: >
+    A complete, well-organized final summary of the scientific document.
+  agent: coordinator_agent
+  # input_tasks:
+  #   summarize_sections
+

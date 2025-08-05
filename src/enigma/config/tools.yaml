@@ -1,0 +1,4 @@
+# tools:
+#   - name: pdf_section_reader
+#     type: python
+#     path: src/enigma/tools/pdf_reader_tool.py

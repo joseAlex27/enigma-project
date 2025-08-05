@@ -2,6 +2,7 @@ from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
 from typing import List
+from crewai_tools import PDFSearchTool
 # If you want to run a snippet of code before or after the crew starts,
 # you can use the @before_kickoff and @after_kickoff decorators
 # https://docs.crewai.com/concepts/crews#example-crew-class-with-decorators
@@ -20,16 +21,24 @@ class Enigma():
     # If you would like to add tools to your agents, you can learn more about it here:
     # https://docs.crewai.com/concepts/agents#agent-tools
     @agent
-    def researcher(self) -> Agent:
+    def reader_agent(self) -> Agent:
         return Agent(
-            config=self.agents_config['researcher'], # type: ignore[index]
-            verbose=True
+            config=self.agents_config['reader_agent'], # type: ignore[index]
+            verbose=True,
+            tools=[PDFSearchTool(pdf='src/enigma/documents/The_Reality_of_Climate_Change.pdf')],
         )
 
     @agent
-    def reporting_analyst(self) -> Agent:
+    def summarizer_agent(self) -> Agent:
         return Agent(
-            config=self.agents_config['reporting_analyst'], # type: ignore[index]
+            config=self.agents_config['summarizer_agent'], # type: ignore[index]
+            verbose=True
+        )
+    
+    @agent
+    def coordinator_agent(self) -> Agent:
+        return Agent(
+            config=self.agents_config['coordinator_agent'], # type: ignore[index]
             verbose=True
         )
 
@@ -39,13 +48,20 @@ class Enigma():
     @task
     def research_task(self) -> Task:
         return Task(
-            config=self.tasks_config['research_task'], # type: ignore[index]
+            config=self.tasks_config['extract_document_sections_task'], # type: ignore[index]
         )
 
     @task
     def reporting_task(self) -> Task:
         return Task(
-            config=self.tasks_config['reporting_task'], # type: ignore[index]
+            config=self.tasks_config['summarize_sections_task'], # type: ignore[index]
+            output_file='report.md'
+        )
+    
+    @task
+    def reporting_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['compile_final_summary_task'], # type: ignore[index]
             output_file='report.md'
         )
 
@@ -55,6 +71,7 @@ class Enigma():
         # To learn how to add knowledge sources to your crew, check out the documentation:
         # https://docs.crewai.com/concepts/knowledge#what-is-knowledge
 
+        
         return Crew(
             agents=self.agents, # Automatically created by the @agent decorator
             tasks=self.tasks, # Automatically created by the @task decorator
