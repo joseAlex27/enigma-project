@@ -3,6 +3,8 @@ from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
 from typing import List
 from crewai_tools import PDFSearchTool
+# from src.enigma.tools.custom_tool import MyOwnRAGTool
+
 # If you want to run a snippet of code before or after the crew starts,
 # you can use the @before_kickoff and @after_kickoff decorators
 # https://docs.crewai.com/concepts/crews#example-crew-class-with-decorators
@@ -14,6 +16,10 @@ class Enigma():
     agents: List[BaseAgent]
     tasks: List[Task]
 
+    # Instanciar la herramienta
+    # rag_tool = MyOwnRAGTool()
+
+
     # Learn more about YAML configuration files here:
     # Agents: https://docs.crewai.com/concepts/agents#yaml-configuration-recommended
     # Tasks: https://docs.crewai.com/concepts/tasks#yaml-configuration-recommended
@@ -21,26 +27,28 @@ class Enigma():
     # If you would like to add tools to your agents, you can learn more about it here:
     # https://docs.crewai.com/concepts/agents#agent-tools
     @agent
-    def reader_agent(self) -> Agent:
+    def extractor_agent(self) -> Agent:
         return Agent(
-            config=self.agents_config['reader_agent'], # type: ignore[index]
+            config=self.agents_config['extractor_agent'], # type: ignore[index]
             verbose=True,
-            tools=[PDFSearchTool(pdf='src/enigma/documents/The_Reality_of_Climate_Change.pdf')],
+            tools=[PDFSearchTool(pdf='src/enigma/documents/ai.pdf')], #RAG TOOL PARA 
         )
 
     @agent
     def summarizer_agent(self) -> Agent:
+       # rag_tool = MyOwnRAGTool()
         return Agent(
             config=self.agents_config['summarizer_agent'], # type: ignore[index]
-            verbose=True
+            verbose=True,
+            #tools=[rag_tool]
         )
     
-    @agent
-    def coordinator_agent(self) -> Agent:
-        return Agent(
-            config=self.agents_config['coordinator_agent'], # type: ignore[index]
-            verbose=True
-        )
+    # @agent
+    # def coordinator_agent(self) -> Agent:
+    #     return Agent(
+    #         config=self.agents_config['coordinator_agent'], # type: ignore[index]
+    #         verbose=True
+    #     )
 
     # To learn more about structured task outputs,
     # task dependencies, and task callbacks, check out the documentation:
@@ -48,22 +56,22 @@ class Enigma():
     @task
     def research_task(self) -> Task:
         return Task(
-            config=self.tasks_config['extract_document_sections_task'], # type: ignore[index]
+            config=self.tasks_config['extraction_task'], # type: ignore[index]
         )
 
     @task
-    def reporting_task(self) -> Task:
+    def summary_task(self) -> Task:
         return Task(
-            config=self.tasks_config['summarize_sections_task'], # type: ignore[index]
+            config=self.tasks_config['summary_task'], # type: ignore[index]
             output_file='report.md'
         )
     
-    @task
-    def reporting_task(self) -> Task:
-        return Task(
-            config=self.tasks_config['compile_final_summary_task'], # type: ignore[index]
-            output_file='report.md'
-        )
+    # @task
+    # def reporting_task(self) -> Task:
+    #     return Task(
+    #         config=self.tasks_config['compile_final_summary_task'], # type: ignore[index]
+    #         output_file='report.md'
+    #     )
 
     @crew
     def crew(self) -> Crew:

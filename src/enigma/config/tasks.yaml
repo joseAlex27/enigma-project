@@ -1,30 +1,54 @@
-extract_document_sections_task:
-  description: >
-    Read the scientific document and divide it into logical sections
-    such as Introduction, Methods, Results and Discussion.
-  expected_output: >
-     A structured JSON or list of text segments representing each document section.
-  agent: reader_agent
-  # args:
-  #     file_path: "documents/PlanetaTransparente.pdf"
+# extract_document_sections_task:
+#   description: >
+#     Read the scientific document and divide it into logical sections
+#     such as Introduction, Methods, Results and Discussion.
+#   expected_output: >
+#      A structured JSON or list of text segments representing each document section.
+#   agent: reader_agent
+#   # args:
+#   #     file_path: "documents/PlanetaTransparente.pdf"
 
-summarize_sections_task:
-  description: >
-    Generate summaries for each of the extracted sections using the selected LLM,
-    enriched with relevant context through RAG if necessary.
-  expected_output: >
-    A set of concise, well-structured summaries corresponding to each section of the document.
-  agent: summarizer_agent
-  # input_tasks:
-  #   extract_document_sections
+# summarize_sections_task:
+#   description: >
+#     Generate summaries for each of the extracted sections using the selected LLM,
+#     enriched with relevant context through RAG if necessary.
+#   expected_output: >
+#     A set of concise, well-structured summaries corresponding to each section of the document.
+#   agent: summarizer_agent
+#   # input_tasks:
+#   #   extract_document_sections
 
-compile_final_summary_task:
+# compile_final_summary_task:
+#   description: >
+#     Review and merge all section summaries into one cohesive document-level summary.
+#      Ensure clarity, consistency, and logical flow throughout the final output.
+#   expected_output: >
+#     A complete, well-organized final summary of the scientific document.
+#   agent: coordinator_agent
+#   # input_tasks:
+#   #   summarize_sections
+
+# Task 1: Extract title, authors, introduction, methods, and results from the paper
+extraction_task :
   description: >
-    Review and merge all section summaries into one cohesive document-level summary.
-     Ensure clarity, consistency, and logical flow throughout the final output.
+    From the PDF, extract the following sections exactly as written from the headers found in the PDF:\n"
+      "- Title\n"
+      "- Authors\n"
+      "- Date of publication\n"
+      "- Introduction\n"
+      "- Methods\n"
+      "- Results\n\n"
+      "- Conclusion\n\n"
+      "Do not summarize or rephrase. Just return the content as it appears in the paper.
+  expected_output: >
+    A structured output with the extracted sections listed in the following order (only include those found in the document):  
+    Title, Authors, Date of publication, Introduction, Methods, Results, Conclusion.
+  agent: extractor_agent
+
+summary_task :
+  description: >
+    Write a summary of the research paper based solely on the content extracted by the other agent.
+    Make sure the summary is clear, concise, and factually accurate, without adding any information that wasn't present in the extracted sections.
   expected_output: >
     A complete, well-organized final summary of the scientific document.
-  agent: coordinator_agent
-  # input_tasks:
-  #   summarize_sections
-
+  agent: summarizer_agent
